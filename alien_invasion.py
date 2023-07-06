@@ -2,6 +2,7 @@ import pygame
 from pygame.sprite import Group
 
 import game_functions as gf
+from game_stats import GameStats
 from settings import Settings
 from ship import Ship
 
@@ -12,6 +13,9 @@ def run_game():
     pygame.init()
     screen = pygame.display.set_mode((ai_settings.screen_width, ai_settings.screen_height))
     pygame.display.set_caption("Alien Invasion")
+
+    # Cria uma instância para armazenar dados estatísticos do jogo
+    stats = GameStats(ai_settings)
 
     # Cria uma espaçonave
     ship = Ship(ai_settings, screen)
@@ -33,9 +37,10 @@ def run_game():
         # Observa eventos de teclado e de mouse
         gf.check_events(ai_settings, screen, ship, bullets)
 
-        ship.update()
-
-        gf.update_bullets(bullets)
+        if stats.game_active:
+            ship.update()
+            gf.update_bullets(ai_settings, screen, ship, aliens, bullets)
+            gf.update_aliens(ai_settings, stats, screen, ship, aliens, bullets)
 
         # Redesenha a tela a cada passagem pelo laço
         gf.update_screen(ai_settings, screen, ship, aliens, bullets)
